@@ -6,7 +6,7 @@ import biocore.java.ncls.IntervalComparator;
 public class NestedList {
 
     Interval[] intervals;
-    SubListHeader[] subheaders;
+    SubListHeader[] subHeaders;
     int nsub;
     int nlists;
 
@@ -14,7 +14,7 @@ public class NestedList {
     public NestedList(Interval[] intervals) {
         // TODO Auto-generated constructor stub
         this.intervals = intervals;
-        // this.subheaders = null;
+        this.subHeaders = null;
         this.nsub = -1;
         this.nlists = -1;
     }
@@ -122,13 +122,32 @@ public class NestedList {
 
         }
 
+        this.subHeaders = subListHeaders;
         return toDelete;
     }
 
-    public void removeSublists(boolean[] toDelete){
+    public void removeSublists(boolean[] toDelete, Interval[] tmpIntervals){
 
-        int i = 0; int j = 0;
-        for (int i = 0; i < this.intervals.length; i++)
+        int j = 0;
+        for (int i = 0; i < toDelete.length; i++) {
+
+            if (!toDelete[i]){
+                if (j < i){
+                    intervals[j] = intervals[i];
+                }
+                j++;
+            }
+        }
+
+        for (int k = 0; k < this.nsub; k++){
+            intervals[j + k] = tmpIntervals[k];
+        }
+
+        for (int i = 0; i < this.nlists; i++){
+
+            this.subHeaders.start += j;
+
+        }
 
     }
 
@@ -148,10 +167,6 @@ public class NestedList {
             this.removeSublists(toDelete);
 
         }
-
-
-
     }
-
 
 }
