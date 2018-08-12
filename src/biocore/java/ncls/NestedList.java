@@ -21,11 +21,11 @@ public class NestedList {
 
     private int getNtop() {
     	// what is ntop?
-    	return this.intervals.length - this.nsub;
+    	return intervals.length - nsub;
     }
     
     public void sortOnIntervals() {
-    	java.util.Arrays.sort(this.intervals, new IntervalComparator());
+    	java.util.Arrays.sort(intervals, new IntervalComparator());
 
     }
 
@@ -35,22 +35,22 @@ public class NestedList {
         int i = 0;
         int parent;
 
-        while (i < this.intervals.length){
+        while (i < intervals.length){
 
             parent = i;
             i = parent + 1;
 
-            while ((i < this.intervals.length) && (parent >= 0)){
+            while ((i < intervals.length) && (parent >= 0)){
 
-                boolean contained = (this.intervals[i].end > this.intervals[parent].end);
+                boolean contained = (intervals[i].end > intervals[parent].end);
 
-                boolean same = (this.intervals[i].end == this.intervals[parent].end) &&
-                    (this.intervals[i].start == this.intervals[parent].start);
+                boolean same = (intervals[i].end == intervals[parent].end) &&
+                    (intervals[i].start == intervals[parent].start);
 
                 if (same || contained){
-                    parent = this.intervals[parent].sublist;
+                    parent = intervals[parent].sublist;
                 } else {
-                    this.intervals[i].sublist = parent;
+                    intervals[i].sublist = parent;
                     nsub++;
                     parent = i;
                     i++;
@@ -68,9 +68,9 @@ public class NestedList {
         int nlists = 0;
         int j = 0;
 
-        Interval[] tmpIntervals = new Interval[this.nsub];
+        Interval[] tmpIntervals = new Interval[nsub];
 
-        for (int i = 0; i < this.intervals.length; i++){
+        for (int i = 0; i < intervals.length; i++){
 
             parent = intervals[i].sublist;
 
@@ -94,7 +94,7 @@ public class NestedList {
 
     public boolean[] createSubListHeader(Interval[] tmpIntervals){
 
-        SubListHeader[] subListHeaders = new SubListHeader[this.nlists];
+        SubListHeader[] subListHeaders = new SubListHeader[nlists];
 
         for (int i = 0; i < tmpIntervals.length; i++){
 
@@ -103,11 +103,10 @@ public class NestedList {
         }
 
         int j, parent, k;
-        int nbToDelete = 0;
         Interval tmpInterval;
-        boolean[] toDelete = new boolean[this.intervals.length];
+        boolean[] toDelete = new boolean[intervals.length];
 
-        for (int i = 0; i < this.nsub; i++){
+        for (int i = 0; i < nsub; i++){
 
             j = tmpIntervals[i].start;
             parent = tmpIntervals[i].sublist;
@@ -126,8 +125,9 @@ public class NestedList {
             toDelete[j] = true;
 
         }
-
+        // System.out.println("this subheaders " + this.subHeaders);
         this.subHeaders = subListHeaders;
+        // System.out.println("this subheaders " + this.subHeaders);
         return toDelete;
     }
 
@@ -144,13 +144,13 @@ public class NestedList {
             }
         }
 
-        for (int k = 0; k < this.nsub; k++){
+        for (int k = 0; k < nsub; k++){
             intervals[j + k] = tmpIntervals[k];
         }
 
-        for (int i = 0; i < this.nlists; i++){
+        for (int i = 0; i < nlists; i++){
 
-            this.subHeaders[i].start += j;
+            subHeaders[i].start += j;
 
         }
 
@@ -158,19 +158,19 @@ public class NestedList {
 
     public void buildNestedList(){
 
-    	this.sortOnIntervals();
-        this.addParentsInplace();
+    	sortOnIntervals();
+        addParentsInplace();
 
         Interval tmpIntervals[];
         boolean toDelete[];
 
-        if (this.nsub > 0) {
+        if (nsub > 0) {
 
-            tmpIntervals = this.setHeaderIndexes();
+            tmpIntervals = setHeaderIndexes();
 
-            toDelete = this.createSubListHeader(tmpIntervals);
+            toDelete = createSubListHeader(tmpIntervals);
 
-            this.removeSublists(toDelete, tmpIntervals);
+            removeSublists(toDelete, tmpIntervals);
 
         }
     }
@@ -178,14 +178,14 @@ public class NestedList {
 
     private int findOverlapStartIndex(int start, int end) {
     	int l = 0;
-    	int r = this.getNtop();
+    	int r = getNtop();
     	int ntop = r;
     	int mid;
 
     	while (l < r) {
 
     		mid = (l + r) / 2;
-    		if (this.intervals[mid].end <= start) {
+    		if (intervals[mid].end <= start) {
     			l = mid + 1;
     		} else {
     			r = mid;
@@ -193,7 +193,7 @@ public class NestedList {
 
     	}
 
-    	if ((l < ntop) && this.intervals[end].hasOverlap(start, end)) {
+    	if ((l < ntop) && intervals[l].hasOverlap(start, end)) {
 
     		return l;
 
@@ -203,19 +203,75 @@ public class NestedList {
 
     	}
     }
-
-
-    public void findOverlaps(int start, int end) {
-
-        int i = this.findOverlapStartIndex(start, end);
-
-        Interval[] overlaps = new Interval[64];
-        // 64 could be any number.
-        // It should be possible to tweak on a per DB basis for optimization purposes...
-        OverlapIterator it = new OverlapIterator(i, this.getNtop());
-
-        
+    
+    private int findSubOverlapStart(int start, int end, int sublist) {
+    	
+    	int overlapStartIndex = findOverlapStartIndex(start, end);
+    	
+    	if (overlapStartIndex >= 0) {
+    		return overlapStartIndex + subHeaders[sublist].length;
+    	} else {
+    	    return -1;
+    	}
+    	
     }
 
 
+    public Interval[] findOverlaps(int start, int end) {
+
+        int i = findOverlapStartIndex(start, end);
+        int sublist = -1; // child, right?
+        int subOverlapStart = -1;
+        
+        int nfound = 0;
+        Interval[] overlaps = new Interval[64];
+        // 64 could be any number.
+        // It should be possible to tweak on a per DB basis for optimization purposes...
+        OverlapIterator it = new OverlapIterator(i, getNtop());
+        OverlapIterator it2 = null;
+        
+        while (true) {
+        	System.out.println(it);
+        	System.out.println((intervals[it.start].hasOverlap(start, end)));
+		    while ((it.start >= 0) && (it.start < it.end) && (intervals[it.start].hasOverlap(start, end))) {
+		    	overlaps[nfound++] = intervals[it.start]; 
+		    	sublist = intervals[it.start++].sublist;
+		    	// System.out.println("Sublist:" + sublist);
+		    	if (sublist >= 0) {
+		    		subOverlapStart = findSubOverlapStart(start, end, sublist);
+		    		
+		    		if (subOverlapStart >= 0) {
+		    			System.out.println("In suboverlap start.");
+		    	    	if (it.child != null) {
+			    			System.out.println("child not null.");
+		    	    		it2 = it.child;
+		    	    	} else {
+			    			System.out.println("child null.");
+		    	    		it2 = new OverlapIterator(-1, -1, it, it2);
+		    	    	}
+		    	    	
+		    	    	it2.start = subOverlapStart;
+		    	    	it2.end = subHeaders[sublist].start + subHeaders[sublist].length;
+		    	    	
+		    	    	it = it2;
+		    	    }
+		    	}
+		    } 
+
+		    if (it.parent != null) {
+		    	System.out.println("parent is not null");
+		    	it = it.parent;
+		    } else {
+		    	System.out.println("parent is null");
+		    	break;
+		    }
+
+        }
+        return overlaps;
+
+    } 
+
 }
+
+
+

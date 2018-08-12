@@ -4,9 +4,19 @@ import biocore.java.ncls.Interval;
 
 public class NCLS {
 
-	 private static void printArray(Interval[] intervals){
+	 private static void printSubHeaderArray(SubListHeader[] subheaders){
+		 System.out.println("Subheaders");
+	        for (int i = 0; i < subheaders.length; i++){
+	        System.out.println(subheaders[i]);
+	        }
+	    }
+	
+	 private static void printIntervalArray(Interval[] intervals){
+		 System.out.println("Intervals");
 	        for (int i = 0; i < intervals.length; i++){
-	        System.out.println(intervals[i]);
+	        	if (intervals[i] != null) {
+	                System.out.println(intervals[i]);
+	        	}
 	        }
 	    }
 
@@ -23,16 +33,24 @@ public class NCLS {
         		new Interval(30, 50, -1)};
         
         
-        System.out.println("Hello World");
+        //System.out.println("Hello World");
         // Interval hi = new Interval(1, 2, 3);        
 
         NestedList nestedList = new NestedList(intervals);
         // java.util.Arrays.sort(intervals, new IntervalComparator());
-        System.out.println("Hiya!");
+        //System.out.println("Hiya!");
         
         nestedList.buildNestedList();
         
-        printArray(nestedList.intervals);
+        printIntervalArray(nestedList.intervals);
+        printSubHeaderArray(nestedList.subHeaders);
+
+        Interval[] results;
+        
+        results = nestedList.findOverlaps(35, 45);
+        
+        printIntervalArray(results);
+
     }
 
 

@@ -9,5 +9,13 @@ public class SubListHeader {
         this.start = start;
         this.length = length;
     };
+    
+    @Override
+    public String toString(){
+
+        String s = "(" + start + ", " + length + ")";
+        return s;
+
+    }
 
 }

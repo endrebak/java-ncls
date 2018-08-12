@@ -16,4 +16,18 @@ public class OverlapIterator {
 
     }
 
+    @Override
+    public String toString(){
+
+        String s = "(" + start + ", " + end + ", " + parent + ", " + child + ")";
+        return s;
+
+    }
+    
+    public OverlapIterator(int start, int end, OverlapIterator parent, OverlapIterator child){
+
+        this.parent = parent;
+        this.child = child;
+
+    }
 }
