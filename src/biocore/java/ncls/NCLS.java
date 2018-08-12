@@ -31,6 +31,7 @@ public class NCLS {
         		new Interval(0, 60, -1),
         		new Interval(40, 50, -1),
         		new Interval(30, 50, -1),
+        		new Interval(0, 1, -1),
         		new Interval(31, 49, -1),
         		new Interval(32, 49, -1),
         		new Interval(120, 150, -1),
@@ -51,8 +52,9 @@ public class NCLS {
 
         Interval[] results;
         
-        // results = nestedList.findOverlaps(35, 45);
-        results = nestedList.findNextNonOverlapping(35, 39, 15);
+        // results = nestedList.findOverlaps(30, 31);
+        // results = nestedList.findNextNonOverlapping(30, 31, 15);
+        results = nestedList.findPreviousNonOverlapping(49, 60, 5);
         printIntervalArray(results);
 
     }
