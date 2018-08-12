@@ -2,8 +2,6 @@ package biocore.java.ncls;
 
 import biocore.java.ncls.Interval;
 
-
-
 public class NCLS {
 
 	 private static void printArray(Interval[] intervals){
@@ -19,6 +17,7 @@ public class NCLS {
     public static void main(String[] args) {
         // TODO Auto-generated method stub
         Interval[] intervals = new Interval[] {
+        		new Interval(90, 115, -1),
         		new Interval(0, 60, -1),
         		new Interval(40, 50, -1),
         		new Interval(30, 50, -1)};
@@ -30,14 +29,9 @@ public class NCLS {
         NestedList nestedList = new NestedList(intervals);
         // java.util.Arrays.sort(intervals, new IntervalComparator());
         System.out.println("Hiya!");
-
-        printArray(nestedList.intervals);
-        System.out.println("Hiya 2!");
-        printArray(nestedList.intervals);
-        nestedList.sortOnIntervals();
-        System.out.println("Hiya 3!");
-        printArray(nestedList.intervals);
-        nestedList.addParentsInplace();
+        
+        nestedList.buildNestedList();
+        
         printArray(nestedList.intervals);
     }
 

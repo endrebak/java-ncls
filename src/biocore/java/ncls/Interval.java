@@ -21,6 +21,11 @@ public class Interval {
 
     }
 
+    public boolean hasOverlap(int start, int end){
+
+        return (this.start < end) && (start < this.end);
+
+    }
 
 
 }

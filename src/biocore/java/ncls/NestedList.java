@@ -19,6 +19,11 @@ public class NestedList {
         this.nlists = -1;
     }
 
+    private int getNtop() {
+    	// what is ntop?
+    	return this.intervals.length - this.nsub;
+    }
+    
     public void sortOnIntervals() {
     	java.util.Arrays.sort(this.intervals, new IntervalComparator());
 
@@ -108,7 +113,7 @@ public class NestedList {
             parent = tmpIntervals[i].sublist;
 
             tmpInterval = intervals[j];
-            tmpIntervals[i] = new Interval(tmpInterval.start, -1, tmpInterval.sublist);
+            tmpIntervals[i] = new Interval(tmpInterval.start, tmpInterval.end, tmpInterval.sublist);
 
             k = intervals[parent].sublist;
 
@@ -145,7 +150,7 @@ public class NestedList {
 
         for (int i = 0; i < this.nlists; i++){
 
-            this.subHeaders.start += j;
+            this.subHeaders[i].start += j;
 
         }
 
@@ -153,6 +158,7 @@ public class NestedList {
 
     public void buildNestedList(){
 
+    	this.sortOnIntervals();
         this.addParentsInplace();
 
         Interval tmpIntervals[];
@@ -164,9 +170,52 @@ public class NestedList {
 
             toDelete = this.createSubListHeader(tmpIntervals);
 
-            this.removeSublists(toDelete);
+            this.removeSublists(toDelete, tmpIntervals);
 
         }
     }
+
+
+    private int findOverlapStartIndex(int start, int end) {
+    	int l = 0;
+    	int r = this.getNtop();
+    	int ntop = r;
+    	int mid;
+
+    	while (l < r) {
+
+    		mid = (l + r) / 2;
+    		if (this.intervals[mid].end <= start) {
+    			l = mid + 1;
+    		} else {
+    			r = mid;
+    		}
+
+    	}
+
+    	if ((l < ntop) && this.intervals[end].hasOverlap(start, end)) {
+
+    		return l;
+
+    	} else {
+
+    	    return -1;
+
+    	}
+    }
+
+
+    public void findOverlaps(int start, int end) {
+
+        int i = this.findOverlapStartIndex(start, end);
+
+        Interval[] overlaps = new Interval[64];
+        // 64 could be any number.
+        // It should be possible to tweak on a per DB basis for optimization purposes...
+        OverlapIterator it = new OverlapIterator(i, this.getNtop());
+
+        
+    }
+
 
 }
