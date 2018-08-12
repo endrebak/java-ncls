@@ -32,7 +32,9 @@ public class NCLS {
         		new Interval(40, 50, -1),
         		new Interval(30, 50, -1),
         		new Interval(31, 49, -1),
-        		new Interval(32, 49, -1)};
+        		new Interval(32, 49, -1),
+        		new Interval(120, 150, -1),
+        		new Interval(130, 135, -1)};
         
         
         //System.out.println("Hello World");
@@ -49,7 +51,7 @@ public class NCLS {
 
         Interval[] results;
         
-        results = nestedList.findOverlaps(30, 32);
+        results = nestedList.findOverlaps(35, 45);
         
         printIntervalArray(results);
 

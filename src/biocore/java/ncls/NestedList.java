@@ -1,5 +1,7 @@
 package biocore.java.ncls;
 
+import java.util.Arrays;
+
 import biocore.java.ncls.IntervalComparator;
 
 
@@ -228,18 +230,22 @@ public class NestedList {
         int subOverlapStart = -1;
         
         int nfound = 0;
-        Interval[] overlaps = new Interval[8];
+        Interval[] overlaps = new Interval[64];
         // could be any size.
         // It should be possible to tweak on a per DB basis for optimization purposes...
         OverlapIterator it = new OverlapIterator(i, getNtop());
         OverlapIterator it2 = null;
         
         while (true) {
-
+ 
 		    while ((it.start >= 0) && (it.start < it.end) && (intervals[it.start].hasOverlap(start, end))) {
+		       	System.out.println("-----");
+	        	System.out.println(it);
+		    	if (!(nfound < overlaps.length)) 
+		    		overlaps = Arrays.copyOf(overlaps, overlaps.length * 2);
 
-		    	overlaps[nfound++] = intervals[it.start]; 
-		    	sublist = intervals[it.start++].sublist;
+	    		overlaps[nfound++] = intervals[it.start]; 
+	    		sublist = intervals[it.start++].sublist;
 		    	if (sublist >= 0) {
 		    		subOverlapStart = findSubOverlapStart(start, end, sublist);
 		    		if (subOverlapStart >= 0) {
@@ -247,11 +253,12 @@ public class NestedList {
 		    	    	if (it.child != null) {
 		    	    		it2 = it.child;
 		    	    	} else {
-			    	    	it2 = new OverlapIterator(-1, -1, it, null);
+			    	    	it2 = new OverlapIterator(-1, -1, it, it2);
 		    	    	}
 
 		    	    	it2.start = subOverlapStart;   	
 		    	    	it2.end = subHeaders[sublist].start + subHeaders[sublist].length;
+			        	System.out.println("it 2 " + it2);
 
 		    	    	it = it2;
 		    	    }
@@ -269,6 +276,8 @@ public class NestedList {
 
     } 
 
+
+    
 }
 
 
