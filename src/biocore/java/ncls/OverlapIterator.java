@@ -26,6 +26,8 @@ public class OverlapIterator {
     
     public OverlapIterator(int start, int end, OverlapIterator parent, OverlapIterator child){
 
+    	this.start = start;
+    	this.end = end;
         this.parent = parent;
         this.child = child;
 

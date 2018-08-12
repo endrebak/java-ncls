@@ -11,7 +11,7 @@ public class NCLS {
 	        }
 	    }
 	
-	 private static void printIntervalArray(Interval[] intervals){
+	 public static void printIntervalArray(Interval[] intervals){
 		 System.out.println("Intervals");
 	        for (int i = 0; i < intervals.length; i++){
 	        	if (intervals[i] != null) {
@@ -30,7 +30,9 @@ public class NCLS {
         		new Interval(90, 115, -1),
         		new Interval(0, 60, -1),
         		new Interval(40, 50, -1),
-        		new Interval(30, 50, -1)};
+        		new Interval(30, 50, -1),
+        		new Interval(31, 49, -1),
+        		new Interval(32, 49, -1)};
         
         
         //System.out.println("Hello World");
