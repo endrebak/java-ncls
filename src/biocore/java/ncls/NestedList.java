@@ -198,6 +198,8 @@ public class NestedList {
 
     	}
 
+    	System.out.println("intervals[lidx] " + intervals[lidx]);
+    	
     	if ((lidx < ntop) && intervals[lidx].hasOverlap(start, end)) {
     		return lidx;
 
@@ -210,9 +212,13 @@ public class NestedList {
     
     private int findSubOverlapStart(int start, int end, int sublist) {
     	
+    	System.out.println("subHeaders[sublist].start " + subHeaders[sublist].start);
+    	System.out.println("subHeaders[sublist].end " + (subHeaders[sublist].start + subHeaders[sublist].length - 1));
+
     	int overlapStartIndex = findOverlapStartIndex(start, end, subHeaders[sublist].start, 
     			subHeaders[sublist].start + subHeaders[sublist].length - 1) - subHeaders[sublist].start;
 
+    	System.out.println("overlapStartIndex " + overlapStartIndex);
 
     	if (overlapStartIndex >= 0) {
     		return overlapStartIndex + subHeaders[sublist].start;
@@ -239,8 +245,8 @@ public class NestedList {
         while (true) {
  
 		    while ((it.start >= 0) && (it.start < it.end) && (intervals[it.start].hasOverlap(start, end))) {
-		       	System.out.println("-----");
-	        	System.out.println(it);
+	        	System.out.println("it " + it);
+
 		    	if (!(nfound < overlaps.length)) 
 		    		overlaps = Arrays.copyOf(overlaps, overlaps.length * 2);
 
@@ -253,12 +259,11 @@ public class NestedList {
 		    	    	if (it.child != null) {
 		    	    		it2 = it.child;
 		    	    	} else {
-			    	    	it2 = new OverlapIterator(-1, -1, it, it2);
+			    	    	it2 = new OverlapIterator(-1, -1, it, null);
 		    	    	}
 
 		    	    	it2.start = subOverlapStart;   	
 		    	    	it2.end = subHeaders[sublist].start + subHeaders[sublist].length;
-			        	System.out.println("it 2 " + it2);
 
 		    	    	it = it2;
 		    	    }
@@ -276,7 +281,58 @@ public class NestedList {
 
     } 
 
+    public Interval[] findNextNonOverlapping(int start, int end, int k) {
 
+        int i = findOverlapStartIndex(start, end, 0, getNtop() - 1);
+        int sublist = -1; // child, right?
+        int subOverlapStart = -1;
+        
+        int nfound = 0;
+        Interval[] overlaps = new Interval[k];
+        // could be any size.
+        // It should be possible to tweak on a per DB basis for optimization purposes...
+        OverlapIterator it = new OverlapIterator(i, getNtop());
+        OverlapIterator it2 = null;
+        
+        while (true) {
+ 
+		    while ((it.start >= 0) && (it.start < it.end) && (nfound < k)) {
+		    	System.out.println("it.start " + it.start);
+		    	System.out.println("intervals[it.start " + intervals[it.start]);
+		    	if (!(intervals[it.start].hasOverlap(start, end))) {
+		    		overlaps[nfound++] = intervals[it.start]; 
+		    	}
+	    		sublist = intervals[it.start++].sublist;
+	    		System.out.println("sublist " + sublist);
+		    	if (sublist >= 0) {
+		    		subOverlapStart = subHeaders[sublist].start;
+		    		System.out.println("subOverlapStart " + subOverlapStart);
+		    		if (subOverlapStart >= 0) {
+
+		    	    	if (it.child != null) {
+		    	    		it2 = it.child;
+		    	    	} else {
+			    	    	it2 = new OverlapIterator(-1, -1, it, null);
+		    	    	}
+
+		    	    	it2.start = subOverlapStart;   	
+		    	    	it2.end = subHeaders[sublist].start + subHeaders[sublist].length;
+
+		    	    	it = it2;
+		    	    }
+		    	}
+		    } 
+
+		    if (it.parent != null) {
+		    	it = it.parent;	
+		    } else { 
+		    	break;
+		    }
+
+        }
+        return overlaps;
+
+    } 
     
 }
 

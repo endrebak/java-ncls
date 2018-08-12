@@ -7,7 +7,7 @@ public class NCLS {
 	 private static void printSubHeaderArray(SubListHeader[] subheaders){
 		 System.out.println("Subheaders");
 	        for (int i = 0; i < subheaders.length; i++){
-	        System.out.println(subheaders[i]);
+	        System.out.println(i + ": " + subheaders[i]);
 	        }
 	    }
 	
@@ -15,7 +15,7 @@ public class NCLS {
 		 System.out.println("Intervals");
 	        for (int i = 0; i < intervals.length; i++){
 	        	if (intervals[i] != null) {
-	                System.out.println(intervals[i]);
+	                System.out.println(i + ": " + intervals[i]);
 	        	}
 	        }
 	    }
@@ -51,8 +51,8 @@ public class NCLS {
 
         Interval[] results;
         
-        results = nestedList.findOverlaps(35, 45);
-        
+        // results = nestedList.findOverlaps(35, 45);
+        results = nestedList.findNextNonOverlapping(35, 39, 15);
         printIntervalArray(results);
 
     }
