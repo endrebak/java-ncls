@@ -54,7 +54,7 @@ public class NCLS {
         
         // results = nestedList.findOverlaps(30, 31);
         // results = nestedList.findNextNonOverlapping(30, 31, 15);
-        results = nestedList.findPreviousNonOverlapping(49, 60, 5);
+        results = nestedList.findPreviousNonOverlapping(134, 137, 3);
         printIntervalArray(results);
 
     }

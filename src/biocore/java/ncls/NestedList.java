@@ -365,27 +365,27 @@ public class NestedList {
         Interval[] overlaps = new Interval[k];
         // could be any size.
         // It should be possible to tweak on a per DB basis for optimization purposes...
-        OverlapIterator it = new OverlapIterator(i, i);
+        OverlapIterator it = new OverlapIterator(0, i);
         OverlapIterator it2 = null;
         int nit = 0;
         while (true) {
-    		System.out.println("----- it " + it);
+    		// System.out.println("----- it " + it);
             
 		    while ((nfound < k) && (it.start <= it.end)) { // (it.start >= 0) && 
-		    	System.out.println("--------------------");
-		    	System.out.println("it " + it);
-		    	System.out.println("it.start " + it.start);
-		    	System.out.println("intervals[it.end] " + intervals[it.end]);
-	    		System.out.println("----- nit " + nit);
-
+//		    	System.out.println("--------------------");
+//		    	System.out.println("it " + it);
+//		    	System.out.println("it.start " + it.start);
+//		    	System.out.println("intervals[it.end] " + intervals[it.end]);
+//	    		System.out.println("nit " + nit);
+//	    		System.out.println(!intervals[it.end].hasOverlap(start, end));
 		    	if (!(intervals[it.end].hasOverlap(start, end))) {
 		    		overlaps[nfound++] = intervals[it.end]; 
 		    	}
 	    		sublist = intervals[it.end--].sublist;
-	    		System.out.println("sublist " + sublist);
+	    		// System.out.println("sublist " + sublist);
 		    	if (sublist >= 0) {
 		    		subOverlapEnd = subHeaders[sublist].start + subHeaders[sublist].length - 1;
-		    		System.out.println("subOverlapEnd " + subOverlapEnd);
+		    		// System.out.println("subOverlapEnd " + subOverlapEnd);
 		    		// if (subOverlapStart >= 0) {
 
 	    	    	if (it.child != null) {
