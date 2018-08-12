@@ -49,7 +49,7 @@ public class NCLS {
 
         Interval[] results;
         
-        results = nestedList.findOverlaps(35, 45);
+        results = nestedList.findOverlaps(30, 32);
         
         printIntervalArray(results);
 

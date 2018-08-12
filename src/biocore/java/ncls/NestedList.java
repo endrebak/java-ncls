@@ -20,7 +20,6 @@ public class NestedList {
     }
 
     private int getNtop() {
-    	// what is ntop?
     	return intervals.length - nsub;
     }
     
@@ -101,8 +100,6 @@ public class NestedList {
 
     	sortOnSubLists(tmpIntervals);
         SubListHeader[] subListHeaders = new SubListHeader[nlists];
-        System.out.println("nlists " + nlists);
-        NCLS.printIntervalArray(tmpIntervals);
         for (int i = 0; i < nlists; i++){
 
             subListHeaders[i] = new SubListHeader(0, 0);
@@ -132,9 +129,7 @@ public class NestedList {
             toDelete[j] = true;
 
         }
-        // System.out.println("this subheaders " + this.subHeaders);
         this.subHeaders = subListHeaders;
-        // System.out.println("this subheaders " + this.subHeaders);
         return toDelete;
     }
 
@@ -190,19 +185,15 @@ public class NestedList {
     	int ntop = ridx + 1;
     	int mid;
 
-    	System.out.println("lidx " + lidx + " ridx " + ridx);
     	while (lidx < ridx) {
 
     		mid = (lidx + ridx) / 2;
-    		System.out.println("mid " + mid);
     		if (intervals[mid].end <= start) {
     			lidx = mid + 1;
     		} else {
     			ridx = mid;
     		}
-    		
-    		System.out.println("lidx " + lidx);
-            System.out.println("ridx " + ridx);
+
     	}
 
     	if ((lidx < ntop) && intervals[lidx].hasOverlap(start, end)) {
@@ -216,17 +207,13 @@ public class NestedList {
     }
     
     private int findSubOverlapStart(int start, int end, int sublist) {
-
-    	System.out.println(start + ", " + end + ", " + subHeaders[sublist].start + ", " + subHeaders[sublist].length + ", " + sublist);
     	
     	int overlapStartIndex = findOverlapStartIndex(start, end, subHeaders[sublist].start, 
     			subHeaders[sublist].start + subHeaders[sublist].length - 1) - subHeaders[sublist].start;
 
-    	System.out.println("overlapstartidx " + overlapStartIndex);
-    	System.out.println("sublist " + sublist);
 
     	if (overlapStartIndex >= 0) {
-    		return overlapStartIndex + subHeaders[sublist].length;
+    		return overlapStartIndex + subHeaders[sublist].start;
     	} else {
     	    return -1;
     	}
@@ -248,39 +235,23 @@ public class NestedList {
         OverlapIterator it2 = null;
         
         while (true) {
-        	System.out.println("--- outer");
-        	System.out.println(it);
-        	System.out.println((intervals[it.start].hasOverlap(start, end)));
+
 		    while ((it.start >= 0) && (it.start < it.end) && (intervals[it.start].hasOverlap(start, end))) {
-	        	System.out.println("--- inner");
-		    	System.out.println(intervals[it.start]);
+
 		    	overlaps[nfound++] = intervals[it.start]; 
 		    	sublist = intervals[it.start++].sublist;
-		    	System.out.println("Sublist:" + sublist);
 		    	if (sublist >= 0) {
 		    		subOverlapStart = findSubOverlapStart(start, end, sublist);
-			    	System.out.println("SubOverlapStart:" + subOverlapStart);		    		
 		    		if (subOverlapStart >= 0) {
-		    			System.out.println("In suboverlap start.");
-		    	    	System.out.println("itty itty itty itty itty " + it);
+
 		    	    	if (it.child != null) {
-			    			System.out.println("child not null.");
 		    	    		it2 = it.child;
 		    	    	} else {
-			    			System.out.println("child null.");
-			    	    	System.out.println("it start, end " + it.start + ", " + it.end);
-//		    	    		it2 = new OverlapIterator(-1, -1, 
-//		    	    				new OverlapIterator(it.start, it.end, it.parent, it.child), 
-//		    	    				new OverlapIterator(-1, -1));
 			    	    	it2 = new OverlapIterator(-1, -1, it, null);
 		    	    	}
-		    	    	System.out.println("it2 " + it2);
-		    	    	it2.start = subOverlapStart;
-		    	    	System.out.println("subHeaders[sublist].start " + subHeaders[sublist].start);
-		    	    	System.out.println("subHeaders[sublist].length " + subHeaders[sublist].length);
-		    	    	
+
+		    	    	it2.start = subOverlapStart;   	
 		    	    	it2.end = subHeaders[sublist].start + subHeaders[sublist].length;
-		    	    	System.out.println("it2 " + it2);
 
 		    	    	it = it2;
 		    	    }
@@ -288,10 +259,8 @@ public class NestedList {
 		    } 
 
 		    if (it.parent != null) {
-		    	System.out.println("parent is not null");
 		    	it = it.parent;
 		    } else {
-		    	System.out.println("parent is null");
 		    	break;
 		    }
 
