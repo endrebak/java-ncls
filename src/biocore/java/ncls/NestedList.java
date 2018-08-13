@@ -17,8 +17,10 @@ public class NestedList {
         // TODO Auto-generated constructor stub
         this.intervals = intervals;
         this.subHeaders = null;
-        this.nsub = -1;
+        this.nsub = -1; // is this the same as length of subheaders?
         this.nlists = -1;
+        
+        buildNestedList();
     }
 
     private int getNtop() {
@@ -160,7 +162,7 @@ public class NestedList {
 
     }
 
-    public void buildNestedList(){
+    private void buildNestedList(){
 
     	sortOnIntervals();
         addParentsInplace();
@@ -275,7 +277,7 @@ public class NestedList {
 	    		sublist = intervals[it.start++].sublist;
 		    	if (sublist >= 0) {
 		    		subOverlapStart = findSubOverlapStart(start, end, sublist);
-		    		// if (subOverlapStart >= 0) {
+		    		if (subOverlapStart >= 0) {
 
 		    	    	if (it.child != null) {
 		    	    		it2 = it.child;
@@ -287,7 +289,7 @@ public class NestedList {
 		    	    	it2.end = subHeaders[sublist].start + subHeaders[sublist].length;
 
 		    	    	it = it2;
-		    	    // }
+		    	     }
 		    	}
 		    } 
 
@@ -328,7 +330,7 @@ public class NestedList {
 		    	if (sublist >= 0) {
 		    		subOverlapStart = subHeaders[sublist].start;
 		    		// System.out.println("subOverlapStart " + subOverlapStart);
-		    		//if (subOverlapStart >= 0) {
+		    		if (subOverlapStart >= 0) {
 
 		    	    	if (it.child != null) {
 		    	    		it2 = it.child;
@@ -340,7 +342,7 @@ public class NestedList {
 		    	    	it2.end = subHeaders[sublist].start + subHeaders[sublist].length;
 
 		    	    	it = it2;
-		    	    //}
+		    	    }
 		    	}
 		    } 
 
@@ -367,9 +369,9 @@ public class NestedList {
         // It should be possible to tweak on a per DB basis for optimization purposes...
         OverlapIterator it = new OverlapIterator(0, i);
         OverlapIterator it2 = null;
-        int nit = 0;
+        // int nit = 0;
         while (true) {
-    		// System.out.println("----- it " + it);
+    		// 	System.out.println("----- it " + it);
             
 		    while ((nfound < k) && (it.start <= it.end)) { // (it.start >= 0) && 
 //		    	System.out.println("--------------------");
@@ -386,19 +388,19 @@ public class NestedList {
 		    	if (sublist >= 0) {
 		    		subOverlapEnd = subHeaders[sublist].start + subHeaders[sublist].length - 1;
 		    		// System.out.println("subOverlapEnd " + subOverlapEnd);
-		    		// if (subOverlapStart >= 0) {
+		    		if (subOverlapEnd>= 0) {
 
-	    	    	if (it.child != null) {
-	    	    		it2 = it.child;
-	    	    	} else {
-		    	    	it2 = new OverlapIterator(-1, -1, it, null);
-	    	    	}
-
-	    	    	it2.start = subHeaders[sublist].start; // subOverlapStart;   	
-	    	    	it2.end = subOverlapEnd;
-
-	    	    	it = it2;
-		    	    // }
+		    	    	if (it.child != null) {
+		    	    		it2 = it.child;
+		    	    	} else {
+			    	    	it2 = new OverlapIterator(-1, -1, it, null);
+		    	    	}
+	
+		    	    	it2.start = subHeaders[sublist].start; // subOverlapStart;   	
+		    	    	it2.end = subOverlapEnd;
+	
+		    	    	it = it2;
+		    	    }
 		    	}
 		    } 
 
@@ -412,6 +414,52 @@ public class NestedList {
         return overlaps;
 
     } 
+    
+    public Hits findOverlaps(NestedList subject) { // NestedList.this is query...
+    
+        int queryIndex = 0;
+    	Interval queryInterval = intervals[0];
+
+        int subjectIndex = subject.findOverlapStartIndex(queryInterval.start, queryInterval.end, 0, subject.getNtop() - 1);
+        Interval subjectInterval;
+        
+        int nfound = 0;
+        Hits hits = new Hits(8);
+
+        int maxQuery = getNtop();
+        int maxSubject = subject.getNtop();
+        while (subjectIndex < maxSubject) { // (queryIndex < maxQuery) || 
+        	subjectInterval = subject.intervals[subjectIndex];
+        	queryInterval = intervals[queryIndex];
+        	
+        	System.out.println("----------------");
+        	System.out.println("subjectInterval " + subjectInterval);
+        	System.out.println("queryInterval " + queryInterval);
+        	System.out.println("subjectIndex " + subjectIndex);
+        	System.out.println("queryIndex " + queryIndex);
+        	
+        	if (queryInterval.hasOverlap(subjectInterval.start, subjectInterval.end)){ 
+        		System.out.println("1");
+        		hits.addIndexes(queryIndex, subjectIndex); // 
+        	    queryIndex++;
+        		
+        	} else if (queryInterval.end < subjectInterval.start) {
+        		queryIndex++;
+        	
+        	} else if (subjectInterval.end < queryInterval.start) {
+        		subjectIndex++;
+        	} else {
+        		subjectIndex++;
+        	}
+        	
+        	//nfound++;
+        	// System.out.println("nfound " + nfound);
+        }
+    
+        return hits;
+    }
+    
+    
 }
 
 
